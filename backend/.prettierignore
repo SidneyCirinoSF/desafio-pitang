@@ -1,0 +1,6 @@
+node_modules
+dist
+out
+src/generated
+bun.lock
+coverage
