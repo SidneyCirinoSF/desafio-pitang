@@ -498,7 +498,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoriaId\": \"41641464-200b-4582-ad94-0e17f8313cd7\",\n  \"descricao\": \"Almoço com cliente7\",\n  \"valor\": 120.50,\n  \"dataDespesa\": \"2026-05-04\"\n}"
+              "raw": "{\n  \"categoriaId\": \"41641464-200b-4582-ad94-0e17f8313cd7\",\n  \"descricao\": \"Almoço com cliente\",\n  \"valor\": 120.50,\n  \"dataDespesa\": \"2026-05-04\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/reimbursements",
@@ -507,6 +507,25 @@
               ],
               "path": [
                 "reimbursements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar solicitação",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/cancel",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reimbursements",
+                "{{reimbursement_id}}",
+                "cancel"
               ]
             }
           },
@@ -655,7 +674,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nomeArquivo\": \"nota.pdf\",\n  \"urlArquivo\": \"https://url.com/nota.pdf\",\n  \"tipoArquivo\": \"application/pdf\"\n}"
+              "raw": "{\n  \"nomeArquivo\": \"recibo.pdf\",\n  \"urlArquivo\": \"https://www.tiporeal.com/wp-content/uploads/exemplo-fonteY2-9-br-restaurante.jpg\",\n  \"tipoArquivo\": \"PDF\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/attachments",

@@ -4,16 +4,16 @@ API REST para gerenciamento de solicitações de reembolso corporativo, constru�
 
 ## Tecnologias
 
-| Camada | Tecnologia |
-|--------|-----------|
-| Runtime | [Bun](https://bun.com/) |
-| Linguagem | TypeScript |
-| Framework HTTP | Express 5 |
-| ORM | Prisma 7 |
-| Banco de dados | SQLite (via libSQL) |
-| Autenticação | JWT (jsonwebtoken) |
-| Validação | Zod |
-| Criptografia | bcryptjs |
+| Camada         | Tecnologia              |
+| -------------- | ----------------------- |
+| Runtime        | [Bun](https://bun.com/) |
+| Linguagem      | TypeScript              |
+| Framework HTTP | Express 5               |
+| ORM            | Prisma 7                |
+| Banco de dados | SQLite (via libSQL)     |
+| Autenticação   | JWT (jsonwebtoken)      |
+| Validação      | Zod                     |
+| Criptografia   | bcryptjs                |
 
 ## Arquitetura
 
@@ -95,11 +95,11 @@ O servidor inicia em `http://localhost:3000`.
 
 ### Dados iniciais (seed)
 
-| Perfil | Email | Senha |
-|--------|-------|-------|
-| ADMIN | admin@sistema.com | 123456 |
-| FINANCE | financeiro@sistema.com | 123456 |
-| MANAGER | gestor@sistema.com | 123456 |
+| Perfil       | Email                   | Senha  |
+| ------------ | ----------------------- | ------ |
+| ADMIN        | admin@sistema.com       | 123456 |
+| FINANCE      | financeiro@sistema.com  | 123456 |
+| MANAGER      | gestor@sistema.com      | 123456 |
 | COLLABORATOR | colaborador@sistema.com | 123456 |
 
 Categorias pré-cadastradas: Transporte, Alimentação, Hospedagem, Material de Escritório, Cursos e Treinamentos.
@@ -116,59 +116,59 @@ O token é obtido via `POST /auth/login` e contém o `id` e `perfil` do usuário
 
 ## Perfis e Permissões (RBAC)
 
-| Perfil | Permissões |
-|--------|-----------|
-| **COLLABORATOR** | Criar, editar, visualizar e cancelar suas próprias solicitações |
-| **MANAGER** | Visualizar todas as solicitações, aprovar ou rejeitar |
-| **FINANCE** | Visualizar todas as solicitações, marcar como pago |
-| **ADMIN** | Gerenciar usuários, categorias, ver todas as solicitações e relatórios |
+| Perfil           | Permissões                                                             |
+| ---------------- | ---------------------------------------------------------------------- |
+| **COLLABORATOR** | Criar, editar, visualizar e cancelar suas próprias solicitações        |
+| **MANAGER**      | Visualizar todas as solicitações, aprovar ou rejeitar                  |
+| **FINANCE**      | Visualizar todas as solicitações, marcar como pago                     |
+| **ADMIN**        | Gerenciar usuários, categorias, ver todas as solicitações e relatórios |
 
 ## Endpoints da API
 
 ### Autenticação
 
-| Método | Rota | Descrição | Autenticação |
-|--------|------|-----------|-------------|
-| POST | `/auth/login` | Login (retorna token JWT) | Não |
+| Método | Rota          | Descrição                 | Autenticação |
+| ------ | ------------- | ------------------------- | ------------ |
+| POST   | `/auth/login` | Login (retorna token JWT) | Não          |
 
 **Body:** `{ "email": "...", "senha": "..." }`
 
 ### Usuários (ADMIN)
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/users` | Listar usuários ativos |
-| POST | `/users` | Criar usuário |
-| GET | `/users/:id` | Obter usuário por ID |
-| PATCH | `/users/:id` | Atualizar usuário |
+| Método | Rota         | Descrição              |
+| ------ | ------------ | ---------------------- |
+| GET    | `/users`     | Listar usuários ativos |
+| POST   | `/users`     | Criar usuário          |
+| GET    | `/users/:id` | Obter usuário por ID   |
+| PATCH  | `/users/:id` | Atualizar usuário      |
 | DELETE | `/users/:id` | Soft delete de usuário |
 
 ### Categorias (ADMIN)
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/categories` | Listar categorias ativas |
-| POST | `/categories` | Criar categoria |
-| GET | `/categories/:id` | Obter categoria por ID |
-| PATCH | `/categories/:id` | Atualizar categoria |
+| Método | Rota              | Descrição                                        |
+| ------ | ----------------- | ------------------------------------------------ |
+| GET    | `/categories`     | Listar categorias ativas                         |
+| POST   | `/categories`     | Criar categoria                                  |
+| GET    | `/categories/:id` | Obter categoria por ID                           |
+| PATCH  | `/categories/:id` | Atualizar categoria                              |
 | DELETE | `/categories/:id` | Soft delete de categoria (se não estiver em uso) |
 
 ### Solicitações de Reembolso
 
-| Método | Rota | Descrição | Perfil |
-|--------|------|-----------|--------|
-| GET | `/reimbursements` | Listar solicitações | COLLABORATOR (próprias) / outros (todas) |
-| POST | `/reimbursements` | Criar solicitação | COLLABORATOR |
-| GET | `/reimbursements/:id` | Obter solicitação | COLLABORATOR (própria) / outros (todas) |
-| PATCH | `/reimbursements/:id` | Editar solicitação | COLLABORATOR (própria, pendente) |
-| POST | `/reimbursements/:id/submit` | Submeter para análise | COLLABORATOR (própria, pendente) |
-| POST | `/reimbursements/:id/cancel` | Cancelar solicitação | COLLABORATOR (própria, pendente) |
-| POST | `/reimbursements/:id/approve` | Aprovar solicitação | MANAGER |
-| POST | `/reimbursements/:id/reject` | Rejeitar solicitação | MANAGER |
-| POST | `/reimbursements/:id/pay` | Marcar como pago | FINANCE |
-| GET | `/reimbursements/:id/history` | Histórico de ações | Todos com acesso à solicitação |
-| POST | `/reimbursements/:id/attachments` | Adicionar anexo | COLLABORATOR (própria) |
-| GET | `/reimbursements/:id/attachments` | Listar anexos | Todos com acesso à solicitação |
+| Método | Rota                              | Descrição             | Perfil                                   |
+| ------ | --------------------------------- | --------------------- | ---------------------------------------- |
+| GET    | `/reimbursements`                 | Listar solicitações   | COLLABORATOR (próprias) / outros (todas) |
+| POST   | `/reimbursements`                 | Criar solicitação     | COLLABORATOR                             |
+| GET    | `/reimbursements/:id`             | Obter solicitação     | COLLABORATOR (própria) / outros (todas)  |
+| PATCH  | `/reimbursements/:id`             | Editar solicitação    | COLLABORATOR (própria, pendente)         |
+| POST   | `/reimbursements/:id/submit`      | Submeter para análise | COLLABORATOR (própria, pendente)         |
+| POST   | `/reimbursements/:id/cancel`      | Cancelar solicitação  | COLLABORATOR (própria, pendente)         |
+| POST   | `/reimbursements/:id/approve`     | Aprovar solicitação   | MANAGER                                  |
+| POST   | `/reimbursements/:id/reject`      | Rejeitar solicitação  | MANAGER                                  |
+| POST   | `/reimbursements/:id/pay`         | Marcar como pago      | FINANCE                                  |
+| GET    | `/reimbursements/:id/history`     | Histórico de ações    | Todos com acesso à solicitação           |
+| POST   | `/reimbursements/:id/attachments` | Adicionar anexo       | COLLABORATOR (própria)                   |
+| GET    | `/reimbursements/:id/attachments` | Listar anexos         | Todos com acesso à solicitação           |
 
 ### Fluxo de Status
 
@@ -192,21 +192,21 @@ Toda transição de status é registrada na tabela `HistoricoSolicitacao`.
 
 ### Modelos
 
-| Modelo | Descrição |
-|--------|-----------|
-| `User` | Usuários do sistema (com soft delete) |
-| `Categoria` | Categorias de despesa (com soft delete) |
+| Modelo                 | Descrição                                   |
+| ---------------------- | ------------------------------------------- |
+| `User`                 | Usuários do sistema (com soft delete)       |
+| `Categoria`            | Categorias de despesa (com soft delete)     |
 | `SolicitacaoReembolso` | Solicitações de reembolso (com soft delete) |
-| `Anexo` | Arquivos anexados às solicitações |
-| `HistoricoSolicitacao` | Registro de auditoria de todas as ações |
+| `Anexo`                | Arquivos anexados às solicitações           |
+| `HistoricoSolicitacao` | Registro de auditoria de todas as ações     |
 
 ### Enums
 
-| Enum | Valores |
-|------|---------|
-| `Perfil` | `COLLABORATOR`, `MANAGER`, `FINANCE`, `ADMIN` |
-| `StatusSolicitacao` | `PENDING`, `SUBMITTED`, `APPROVED`, `REJECTED`, `PAID`, `CANCELLED` |
-| `AcaoHistorico` | `CREATED`, `SUBMITTED`, `APPROVED`, `REJECTED`, `PAID`, `CANCELLED` |
+| Enum                | Valores                                                                        |
+| ------------------- | ------------------------------------------------------------------------------ |
+| `Perfil`            | `COLLABORATOR`, `MANAGER`, `FINANCE`, `ADMIN`                                  |
+| `StatusSolicitacao` | `PENDING`, `SUBMITTED`, `APPROVED`, `REJECTED`, `PAID`, `CANCELLED`            |
+| `AcaoHistorico`     | `CREATED`, `SUBMITTED`, `APPROVED`, `REJECTED`, `PAID`, `CANCELLED`, `UPDATED` |
 
 ### Decisões de modelagem
 
@@ -246,23 +246,23 @@ Objetos JSON diretamente. Coleções como arrays JSON.
 
 ## Scripts
 
-| Comando | Descrição |
-|---------|-----------|
-| `bun run dev` | Iniciar servidor com hot reload |
-| `bun run start` | Iniciar servidor em produção |
-| `bun run db:generate` | Gerar cliente Prisma |
-| `bun run db:push` | Sincronizar schema com banco |
-| `bun run db:migrate` | Criar migration a partir do schema |
-| `bun run db:seed` | Popular banco com dados iniciais |
-| `bun run db:studio` | Abrir Prisma Studio |
-| `bun run lint` | Executar ESLint |
-| `bun run lint:fix` | Corrigir problemas de lint |
-| `bun run format` | Formatar código com Prettier |
+| Comando               | Descrição                          |
+| --------------------- | ---------------------------------- |
+| `bun run dev`         | Iniciar servidor com hot reload    |
+| `bun run start`       | Iniciar servidor em produção       |
+| `bun run db:generate` | Gerar cliente Prisma               |
+| `bun run db:push`     | Sincronizar schema com banco       |
+| `bun run db:migrate`  | Criar migration a partir do schema |
+| `bun run db:seed`     | Popular banco com dados iniciais   |
+| `bun run db:studio`   | Abrir Prisma Studio                |
+| `bun run lint`        | Executar ESLint                    |
+| `bun run lint:fix`    | Corrigir problemas de lint         |
+| `bun run format`      | Formatar código com Prettier       |
 
 ## Variáveis de Ambiente
 
-| Variável | Descrição | Padrão |
-|----------|-----------|--------|
-| `DATABASE_URL` | URL de conexão do banco | `file:./dev.db` |
-| `JWT_SECRET` | Chave secreta para tokens JWT | (obrigatório) |
-| `PORT` | Porta do servidor | `3000` |
+| Variável       | Descrição                     | Padrão          |
+| -------------- | ----------------------------- | --------------- |
+| `DATABASE_URL` | URL de conexão do banco       | `file:./dev.db` |
+| `JWT_SECRET`   | Chave secreta para tokens JWT | (obrigatório)   |
+| `PORT`         | Porta do servidor             | `3000`          |
