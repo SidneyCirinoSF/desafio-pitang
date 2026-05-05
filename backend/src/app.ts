@@ -1,9 +1,11 @@
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { userRoutes } from "./http/routes/user.routes.js";
 import { reimbursementRoutes } from "./http/routes/reimbursement.routes.js";
 import { categoryRoutes } from "./http/routes/category.routes.js";
 import { serializeDates } from "./lib/intl.js";
+import { AppError } from "./lib/errors.js";
 
 const app = express();
 
@@ -24,5 +26,31 @@ app.get("/", (_req, res) => {
 app.use(userRoutes);
 app.use("/reimbursements", reimbursementRoutes);
 app.use("/categories", categoryRoutes);
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      message: err.message,
+      statusCode: err.statusCode,
+      error: err.error,
+    });
+  }
+
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      message: "Dados inválidos",
+      statusCode: 400,
+      error: "Bad Request",
+      errors: err.flatten().fieldErrors,
+    });
+  }
+
+  console.error("Erro não tratado:", err);
+  return res.status(500).json({
+    message: "Erro interno do servidor",
+    statusCode: 500,
+    error: "Internal Server Error",
+  });
+});
 
 export { app };

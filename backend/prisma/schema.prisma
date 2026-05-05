@@ -7,40 +7,69 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Perfil {
+  COLLABORATOR
+  MANAGER
+  FINANCE
+  ADMIN
+}
+
+enum StatusSolicitacao {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+}
+
+enum AcaoHistorico {
+  CREATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+  UPDATED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  nome      String
-  email     String   @unique
-  senha     String
-  perfil    String   @default("COLLABORATOR")
-  criadoEm  DateTime @default(now())
+  id           String   @id @default(uuid(7))
+  nome         String
+  email        String   @unique
+  senha        String
+  perfil       Perfil   @default(COLLABORATOR)
+  criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
+  deletadoEm   DateTime?
 
   solicitacoes SolicitacaoReembolso[]
   historicos   HistoricoSolicitacao[]
 }
 
 model Categoria {
-  id        String   @id @default(uuid())
-  nome      String   @unique
-  ativo     Boolean  @default(true)
-  criadoEm  DateTime @default(now())
+  id           String   @id @default(uuid(7))
+  nome         String   @unique
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
+  deletadoEm   DateTime?
 
   solicitacoes SolicitacaoReembolso[]
 }
 
 model SolicitacaoReembolso {
-  id                  String   @id @default(uuid())
-  solicitanteId       String
-  categoriaId         String
-  descricao           String
-  valor               Float
-  dataDespesa         DateTime
-  status              String   @default("PENDING")
+  id                    String            @id @default(uuid(7))
+  solicitanteId         String
+  categoriaId           String
+  descricao             String
+  valor                 Int
+  dataDespesa           DateTime
+  status                StatusSolicitacao @default(PENDING)
   justificativaRejeicao String?
-  criadoEm            DateTime @default(now())
-  atualizadoEm        DateTime @updatedAt
+  criadoEm              DateTime          @default(now())
+  atualizadoEm          DateTime          @updatedAt
+  deletadoEm            DateTime?
 
   solicitante User       @relation(fields: [solicitanteId], references: [id])
   categoria   Categoria  @relation(fields: [categoriaId], references: [id])
@@ -49,23 +78,23 @@ model SolicitacaoReembolso {
 }
 
 model Anexo {
-  id             String   @id @default(uuid())
-  solicitacaoId  String
-  nomeArquivo    String
-  urlArquivo     String
-  tipoArquivo    String
-  criadoEm       DateTime @default(now())
+  id            String   @id @default(uuid(7))
+  solicitacaoId String
+  nomeArquivo   String
+  urlArquivo    String
+  tipoArquivo   String   @default("PDF")
+  criadoEm      DateTime @default(now())
 
   solicitacao SolicitacaoReembolso @relation(fields: [solicitacaoId], references: [id])
 }
 
 model HistoricoSolicitacao {
-  id             String   @id @default(uuid())
-  solicitacaoId  String
-  usuarioId      String
-  acao           String
-  observacao     String?
-  criadoEm       DateTime @default(now())
+  id            String         @id @default(uuid(7))
+  solicitacaoId String
+  usuarioId     String
+  acao          AcaoHistorico
+  observacao    String?
+  criadoEm      DateTime       @default(now())
 
   solicitacao SolicitacaoReembolso @relation(fields: [solicitacaoId], references: [id])
   usuario     User                 @relation(fields: [usuarioId], references: [id])

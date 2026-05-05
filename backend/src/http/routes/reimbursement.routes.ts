@@ -8,11 +8,11 @@ import {
   approveReimbursement,
   rejectReimbursement,
   payReimbursement,
+  cancelReimbursement,
   getHistory,
   addAttachment,
   getAttachments,
 } from "../controllers/reimbursement.controller.js";
-
 import {
   authMiddleware,
   requirePermission,
@@ -21,10 +21,8 @@ import {
 } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-
 router.use(authMiddleware);
 
-// COLLABORATOR
 router.get(
   "/",
   requireAnyPermission(PERMISSIONS.VIEW_OWN_REQUEST, PERMISSIONS.VIEW_ALL_REQUESTS),
@@ -38,15 +36,13 @@ router.get(
 );
 router.patch("/:id", requirePermission(PERMISSIONS.EDIT_OWN_REQUEST), patchReimbursement);
 router.post("/:id/submit", requirePermission(PERMISSIONS.EDIT_OWN_REQUEST), submitReimbursement);
+router.post("/:id/cancel", requirePermission(PERMISSIONS.EDIT_OWN_REQUEST), cancelReimbursement);
 
-// MANAGER
 router.post("/:id/approve", requirePermission(PERMISSIONS.APPROVE_REQUEST), approveReimbursement);
 router.post("/:id/reject", requirePermission(PERMISSIONS.REJECT_REQUEST), rejectReimbursement);
 
-// FINANCE
 router.post("/:id/pay", requirePermission(PERMISSIONS.MARK_AS_PAID), payReimbursement);
 
-// GERAL
 router.get(
   "/:id/history",
   requireAnyPermission(PERMISSIONS.VIEW_OWN_REQUEST, PERMISSIONS.VIEW_ALL_REQUESTS),
