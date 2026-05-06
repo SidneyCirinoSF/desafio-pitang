@@ -42,11 +42,46 @@ export async function login(email: string, senha: string) {
   };
 }
 
-export async function listUsers() {
-  return prisma.user.findMany({
-    where: { deletadoEm: null },
-    select: userSelect,
-  });
+export async function listUsers(params: {
+  page: number;
+  limit: number;
+  sort?: string;
+  order: "asc" | "desc";
+  search?: string;
+}) {
+  const where: Record<string, unknown> = { deletadoEm: null };
+
+  if (params.search) {
+    where.OR = [{ nome: { contains: params.search } }, { email: { contains: params.search } }];
+  }
+
+  const sortField =
+    params.sort && ["nome", "email", "perfil", "criadoEm"].includes(params.sort)
+      ? params.sort
+      : "criadoEm";
+  const orderBy = { [sortField]: params.order };
+  const skip = (params.page - 1) * params.limit;
+
+  const [data, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      select: userSelect,
+      orderBy,
+      skip,
+      take: params.limit,
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return {
+    data,
+    meta: {
+      page: params.page,
+      limit: params.limit,
+      total,
+      totalPages: Math.ceil(total / params.limit),
+    },
+  };
 }
 
 export async function getUserById(id: string) {

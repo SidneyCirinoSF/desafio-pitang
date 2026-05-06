@@ -24,3 +24,16 @@ export const rejectReimbursementSchema = z.object({
 export const idParamSchema = z.object({
   id: z.string().uuid("ID inválido"),
 });
+
+export const reimbursementFilterSchema = z.object({
+  status: z.enum(["PENDING", "SUBMITTED", "APPROVED", "REJECTED", "PAID", "CANCELLED"]).optional(),
+  categoriaId: z.string().uuid().optional(),
+  dataInicio: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  dataFim: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+});

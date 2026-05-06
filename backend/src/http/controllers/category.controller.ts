@@ -1,11 +1,14 @@
 import type { Response } from "express";
+import type { Request } from "express";
 import type { AuthRequest } from "../middlewares/auth.middleware.js";
 import { createCategorySchema, updateCategorySchema } from "../schemas/category.schema.js";
+import { paginationSchema } from "../schemas/query.schema.js";
 import * as categoryService from "../../services/category.service.js";
 
-export async function getCategories(_req: AuthRequest, res: Response) {
-  const categorias = await categoryService.listCategories();
-  return res.json(categorias);
+export async function getCategories(req: Request, res: Response) {
+  const params = paginationSchema.parse(req.query);
+  const result = await categoryService.listCategories(params);
+  return res.json(result);
 }
 
 export async function getCategoryById(req: AuthRequest, res: Response) {

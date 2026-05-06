@@ -27,6 +27,22 @@ const solicitacaoInclude = {
   anexos: true,
 } as const;
 
+interface ListReimbursementsParams {
+  userId: string;
+  perfil: string;
+  page: number;
+  limit: number;
+  sort?: string;
+  order: "asc" | "desc";
+  search?: string;
+  status?: string;
+  categoriaId?: string;
+  dataInicio?: string;
+  dataFim?: string;
+}
+
+const SORTABLE_FIELDS = ["criadoEm", "valor", "status", "dataDespesa"] as const;
+
 async function findSolicitacaoOrThrow(id: string) {
   const solicitacao = await prisma.solicitacaoReembolso.findFirst({
     where: { id, deletadoEm: null },
@@ -42,20 +58,60 @@ function checkOwnership(solicitanteId: string, userId: string) {
   }
 }
 
-export async function listReimbursements(userId: string, perfil: string) {
+export async function listReimbursements(params: ListReimbursementsParams) {
   const where: Record<string, unknown> = { deletadoEm: null };
 
-  if (perfil === "COLLABORATOR") {
-    where.solicitanteId = userId;
+  if (params.perfil === "COLLABORATOR") {
+    where.solicitanteId = params.userId;
   }
 
-  const solicitacoes = await prisma.solicitacaoReembolso.findMany({
-    where,
-    include: solicitacaoInclude,
-    orderBy: { criadoEm: "desc" },
-  });
+  if (params.status) {
+    where.status = params.status;
+  }
 
-  return solicitacoes.map(formatSolicitacao);
+  if (params.categoriaId) {
+    where.categoriaId = params.categoriaId;
+  }
+
+  if (params.dataInicio || params.dataFim) {
+    const dataFilter: Record<string, Date> = {};
+    if (params.dataInicio) dataFilter.gte = new Date(params.dataInicio);
+    if (params.dataFim) dataFilter.lte = new Date(params.dataFim);
+    where.dataDespesa = dataFilter;
+  }
+
+  if (params.search) {
+    where.descricao = { contains: params.search };
+  }
+
+  const sortField =
+    params.sort && SORTABLE_FIELDS.includes(params.sort as (typeof SORTABLE_FIELDS)[number])
+      ? params.sort
+      : "criadoEm";
+  const orderBy = { [sortField]: params.order };
+
+  const skip = (params.page - 1) * params.limit;
+
+  const [data, total] = await Promise.all([
+    prisma.solicitacaoReembolso.findMany({
+      where,
+      include: solicitacaoInclude,
+      orderBy,
+      skip,
+      take: params.limit,
+    }),
+    prisma.solicitacaoReembolso.count({ where }),
+  ]);
+
+  return {
+    data: data.map(formatSolicitacao),
+    meta: {
+      page: params.page,
+      limit: params.limit,
+      total,
+      totalPages: Math.ceil(total / params.limit),
+    },
+  };
 }
 
 export async function getReimbursementById(id: string, userId: string, perfil: string) {

@@ -1,5 +1,7 @@
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import { ZodError } from "zod";
 import { userRoutes } from "./http/routes/user.routes.js";
 import { reimbursementRoutes } from "./http/routes/reimbursement.routes.js";
@@ -9,6 +11,13 @@ import { AppError } from "./lib/errors.js";
 
 const app = express();
 
+app.use(
+  cors({
+    origin: process.env["CORS_ORIGIN"] ?? "http://localhost:5173",
+    credentials: true,
+  }),
+);
+app.use(cookieParser());
 app.use(express.json());
 
 app.use((_req: Request, res: Response, next: NextFunction) => {

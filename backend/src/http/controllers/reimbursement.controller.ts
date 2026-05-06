@@ -5,17 +5,30 @@ import {
   updateReimbursementSchema,
   rejectReimbursementSchema,
   idParamSchema,
+  reimbursementFilterSchema,
 } from "../schemas/reimbursement.schema.js";
+import { paginationSchema } from "../schemas/query.schema.js";
 import * as reimbursementService from "../../services/reimbursement.service.js";
 
 export async function getReimbursements(req: AuthRequest, res: Response) {
-  const solicitacoes = await reimbursementService.listReimbursements(req.userId, req.userPerfil);
-  return res.json(solicitacoes);
+  const pagination = paginationSchema.parse(req.query);
+  const filters = reimbursementFilterSchema.parse(req.query);
+  const result = await reimbursementService.listReimbursements({
+    userId: req.userId,
+    perfil: req.userPerfil,
+    ...pagination,
+    ...filters,
+  });
+  return res.json(result);
 }
 
 export async function getReimbursement(req: AuthRequest, res: Response) {
   const { id } = idParamSchema.parse(req.params);
-  const solicitacao = await reimbursementService.getReimbursementById(id, req.userId, req.userPerfil);
+  const solicitacao = await reimbursementService.getReimbursementById(
+    id,
+    req.userId,
+    req.userPerfil,
+  );
   return res.json(solicitacao);
 }
 
@@ -47,7 +60,11 @@ export async function approveReimbursement(req: AuthRequest, res: Response) {
 export async function rejectReimbursement(req: AuthRequest, res: Response) {
   const { id } = idParamSchema.parse(req.params);
   const { justificativaRejeicao } = rejectReimbursementSchema.parse(req.body);
-  const solicitacao = await reimbursementService.rejectReimbursement(id, justificativaRejeicao, req.userId);
+  const solicitacao = await reimbursementService.rejectReimbursement(
+    id,
+    justificativaRejeicao,
+    req.userId,
+  );
   return res.json(solicitacao);
 }
 
@@ -65,7 +82,11 @@ export async function cancelReimbursement(req: AuthRequest, res: Response) {
 
 export async function getHistory(req: AuthRequest, res: Response) {
   const { id } = idParamSchema.parse(req.params);
-  const historicos = await reimbursementService.getReimbursementHistory(id, req.userId, req.userPerfil);
+  const historicos = await reimbursementService.getReimbursementHistory(
+    id,
+    req.userId,
+    req.userPerfil,
+  );
   return res.json(historicos);
 }
 

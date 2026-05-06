@@ -1,17 +1,40 @@
 import type { Response } from "express";
 import type { Request } from "express";
+import type { AuthRequest } from "../middlewares/auth.middleware.js";
 import { loginSchema, createUserSchema, updateUserSchema } from "../schemas/auth.schema.js";
+import { paginationSchema } from "../schemas/query.schema.js";
 import * as userService from "../../services/user.service.js";
 
 export async function login(req: Request, res: Response) {
   const { email, senha } = loginSchema.parse(req.body);
   const result = await userService.login(email, senha);
-  return res.json(result);
+
+  res.cookie("token", result.token, {
+    httpOnly: true,
+    secure: process.env["NODE_ENV"] === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 3600000,
+  });
+
+  return res.json({ user: result.user });
 }
 
-export async function getUsers(_req: Request, res: Response) {
-  const users = await userService.listUsers();
-  return res.json(users);
+export async function logout(_req: Request, res: Response) {
+  res.clearCookie("token", { path: "/" });
+  return res.json({ message: "Logout realizado com sucesso" });
+}
+
+export async function me(req: Request, res: Response) {
+  const authReq = req as AuthRequest;
+  const user = await userService.getUserById(authReq.userId);
+  return res.json(user);
+}
+
+export async function getUsers(req: Request, res: Response) {
+  const params = paginationSchema.parse(req.query);
+  const result = await userService.listUsers(params);
+  return res.json(result);
 }
 
 export async function getUserById(req: Request, res: Response) {

@@ -31,11 +31,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.EDIT_OWN_REQUEST,
     PERMISSIONS.CANCEL_REQUEST,
   ],
-  MANAGER: [
-    PERMISSIONS.VIEW_ALL_REQUESTS,
-    PERMISSIONS.APPROVE_REQUEST,
-    PERMISSIONS.REJECT_REQUEST,
-  ],
+  MANAGER: [PERMISSIONS.VIEW_ALL_REQUESTS, PERMISSIONS.APPROVE_REQUEST, PERMISSIONS.REJECT_REQUEST],
   FINANCE: [PERMISSIONS.VIEW_ALL_REQUESTS, PERMISSIONS.MARK_AS_PAID],
   ADMIN: [
     PERMISSIONS.MANAGE_USERS,
@@ -46,8 +42,8 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 };
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
-  const header = req.headers.authorization;
-  if (!header || !header.startsWith("Bearer ")) {
+  const token = req.cookies?.["token"];
+  if (!token) {
     res.status(401).json({
       message: "Token não fornecido",
       statusCode: 401,
@@ -55,9 +51,9 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
     });
     return;
   }
-  const token = header.slice(7);
   const payload = verifyToken(token);
   if (!payload.sub || !payload.perfil) {
+    res.clearCookie("token", { path: "/" });
     res.status(401).json({
       message: "Token inválido",
       statusCode: 401,

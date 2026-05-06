@@ -1,11 +1,43 @@
 import { prisma } from "../lib/prisma.js";
 import { AppError } from "../lib/errors.js";
 
-export async function listCategories() {
-  return prisma.categoria.findMany({
-    where: { deletadoEm: null },
-    orderBy: { nome: "asc" },
-  });
+export async function listCategories(params: {
+  page: number;
+  limit: number;
+  sort?: string;
+  order: "asc" | "desc";
+  search?: string;
+}) {
+  const where: Record<string, unknown> = { deletadoEm: null };
+
+  if (params.search) {
+    where.nome = { contains: params.search };
+  }
+
+  const sortField =
+    params.sort && ["nome", "criadoEm"].includes(params.sort) ? params.sort : "nome";
+  const orderBy = { [sortField]: params.order };
+  const skip = (params.page - 1) * params.limit;
+
+  const [data, total] = await Promise.all([
+    prisma.categoria.findMany({
+      where,
+      orderBy,
+      skip,
+      take: params.limit,
+    }),
+    prisma.categoria.count({ where }),
+  ]);
+
+  return {
+    data,
+    meta: {
+      page: params.page,
+      limit: params.limit,
+      total,
+      totalPages: Math.ceil(total / params.limit),
+    },
+  };
 }
 
 export async function getCategoryById(id: string) {
