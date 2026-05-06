@@ -2,15 +2,60 @@
   "info": {
     "_postman_id": "3e2deb65-f93a-444a-aafe-86474c85d777",
     "name": "Pitang Challenge",
-    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "description": "API - Sistema de Solicita\u00e7\u00f5es de Reembolso\n\nAutentica\u00e7\u00e3o via HTTP-only cookies. Ap\u00f3s fazer login, o cookie `token` \u00e9 armazenado automaticamente pelo Postman e enviado nas requisi\u00e7\u00f5es subsequentes.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "54445196",
     "_collection_link": "https://go.postman.co/collection/54445196-3e2deb65-f93a-444a-aafe-86474c85d777?source=collection_link"
   },
   "item": [
     {
-      "name": "user",
+      "name": "auth",
       "item": [
+        {
+          "name": "Login admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login bem-sucedido\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "pm.test(\"Retorna dados do usu\u00e1rio\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.user).to.be.an('object');",
+                  "    pm.expect(body.user.email).to.equal('admin@sistema.com');",
+                  "    pm.expect(body.user.perfil).to.equal('ADMIN');",
+                  "});",
+                  "pm.test(\"Cookie token foi definido\", function () {",
+                  "    const cookies = pm.response.headers.toObject()['set-cookie'];",
+                  "    pm.expect(cookies).to.not.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@sistema.com\",\n    \"senha\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
         {
           "name": "Login gestor",
           "event": [
@@ -18,84 +63,35 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Successful POST request\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "pm.test(\"Login bem-sucedido\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
                   "});",
-                  ""
+                  "pm.test(\"Cookie token foi definido\", function () {",
+                  "    const cookies = pm.response.headers.toObject()['set-cookie'];",
+                  "    pm.expect(cookies).to.not.be.undefined;",
+                  "});"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"gestor@sistema.com\",\n    \"senha\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"email\": \"gestor@sistema.com\",\n    \"senha\": \"123456\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
-          },
-          "response": []
-        },
-        {
-          "name": "Login colaborador",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successful POST request\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
             }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"colaborador@sistema.com\",\n    \"senha\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
           },
           "response": []
         },
@@ -106,213 +102,221 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Successful POST request\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "pm.test(\"Login bem-sucedido\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
                   "});",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"financeiro@sistema.com\",\n    \"senha\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
-          },
-          "response": []
-        },
-        {
-          "name": "Login admin",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successful POST request\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"admin@sistema.com\",\n    \"senha\": \"123456\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
-          },
-          "response": []
-        },
-        {
-          "name": "Criar usuário",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
+                  "pm.test(\"Cookie token foi definido\", function () {",
+                  "    const cookies = pm.response.headers.toObject()['set-cookie'];",
+                  "    pm.expect(cookies).to.not.be.undefined;",
                   "});"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"financeiro@sistema.com\",\n    \"senha\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login colaborador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login bem-sucedido\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "pm.test(\"Cookie token foi definido\", function () {",
+                  "    const cookies = pm.response.headers.toObject()['set-cookie'];",
+                  "    pm.expect(cookies).to.not.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"colaborador@sistema.com\",\n    \"senha\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verificar sess\u00e3o (me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Sess\u00e3o v\u00e1lida\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "pm.test(\"Retorna dados do usu\u00e1rio\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.id).to.be.a('string');",
+                  "    pm.expect(body.email).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Logout bem-sucedido\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "Criar usu\u00e1rio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n\t\"nome\": \"Sidney Cirino\",\r\n\t\"email\": \"sidney@teste10.com\",\r\n    \"senha\": \"123456\",\r\n\t\"perfil\": \"ADMIN\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"nome\": \"Sidney Cirino\",\n    \"email\": \"sidney@teste10.com\",\n    \"senha\": \"123456\",\n    \"perfil\": \"ADMIN\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/users",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "users"
-              ]
-            },
-            "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+              "host": ["{{base_url}}"],
+              "path": ["users"]
+            }
           },
           "response": []
         },
         {
-          "name": "Listar usuários",
+          "name": "Listar usu\u00e1rios",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           },
           "request": {
             "method": "GET",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
             "url": {
               "raw": "{{base_url}}/users",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "users"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["users"]
             }
           },
           "response": []
         },
         {
-          "name": "Buscar usuário por ID",
+          "name": "Buscar usu\u00e1rio por ID",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/users/{{user_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "users",
-                "{{user_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
             }
           },
           "response": []
         },
         {
-          "name": "Atualizar usuário",
+          "name": "Atualizar usu\u00e1rio",
           "request": {
             "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"perfil\": \"MANAGER\"\r\n}"
+              "raw": "{\n    \"perfil\": \"MANAGER\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/users/{{user_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "users",
-                "{{user_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
             }
           },
           "response": []
         },
         {
-          "name": "Deletar usuário",
+          "name": "Deletar usu\u00e1rio",
           "request": {
             "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{base_url}}/users/{{user_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "users",
-                "{{user_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
             }
           },
           "response": []
@@ -326,24 +330,20 @@
           "name": "Criar categoria",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"nome\": \"XPTO\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"nome\": \"XPTO\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/categories",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
             }
           },
           "response": []
@@ -356,23 +356,10 @@
           "request": {
             "method": "GET",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
               "raw": "{{base_url}}/categories",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
             }
           },
           "response": []
@@ -384,13 +371,8 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/categories/{{category_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories",
-                "{{category_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["categories", "{{category_id}}"]
             }
           },
           "response": []
@@ -402,28 +384,17 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"ativo\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"ativo\": false\n}"
             },
             "url": {
               "raw": "{{base_url}}/categories/{{category_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories",
-                "{{category_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["categories", "{{category_id}}"]
             }
           },
           "response": []
@@ -435,13 +406,8 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/categories/{{category_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "categories",
-                "{{category_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["categories", "{{category_id}}"]
             }
           },
           "response": []
@@ -449,21 +415,17 @@
       ]
     },
     {
-      "name": "Reimbursements",
+      "name": "reimbursements",
       "item": [
         {
-          "name": "Listar solicitações",
+          "name": "Listar solicita\u00e7\u00f5es",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements"]
             }
           },
           "response": []
@@ -475,19 +437,14 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}"]
             }
           },
           "response": []
         },
         {
-          "name": "Criar solicitação",
+          "name": "Criar solicita\u00e7\u00e3o",
           "request": {
             "method": "POST",
             "header": [
@@ -498,41 +455,31 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoriaId\": \"41641464-200b-4582-ad94-0e17f8313cd7\",\n  \"descricao\": \"Almoço com cliente\",\n  \"valor\": 120.50,\n  \"dataDespesa\": \"2026-05-04\"\n}"
+              "raw": "{\n  \"categoriaId\": \"41641464-200b-4582-ad94-0e17f8313cd7\",\n  \"descricao\": \"Almo\u00e7o com cliente\",\n  \"valor\": 120.50,\n  \"dataDespesa\": \"2026-05-04\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/reimbursements",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements"]
             }
           },
           "response": []
         },
         {
-          "name": "Cancelar solicitação",
+          "name": "Cancelar solicita\u00e7\u00e3o",
           "request": {
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/cancel",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "cancel"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "cancel"]
             }
           },
           "response": []
         },
         {
-          "name": "Atualizar solicitação",
+          "name": "Atualizar solicita\u00e7\u00e3o",
           "request": {
             "method": "PATCH",
             "header": [
@@ -543,36 +490,25 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"descricao\": \"Almoço atualizado\",\n  \"valor\": 150\n}"
+              "raw": "{\n  \"descricao\": \"Almo\u00e7o atualizado\",\n  \"valor\": 150\n}"
             },
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}"]
             }
           },
           "response": []
         },
         {
-          "name": "Enviar para análise",
+          "name": "Enviar para an\u00e1lise",
           "request": {
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/submit",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "submit"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "submit"]
             }
           },
           "response": []
@@ -584,14 +520,8 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/approve",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "approve"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "approve"]
             }
           },
           "response": []
@@ -612,14 +542,8 @@
             },
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/reject",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "reject"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "reject"]
             }
           },
           "response": []
@@ -631,33 +555,21 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/pay",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "pay"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "pay"]
             }
           },
           "response": []
         },
         {
-          "name": "Histórico",
+          "name": "Hist\u00f3rico",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/history",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "history"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "history"]
             }
           },
           "response": []
@@ -678,14 +590,8 @@
             },
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/attachments",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "attachments"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "attachments"]
             }
           },
           "response": []
@@ -697,14 +603,8 @@
             "header": [],
             "url": {
               "raw": "{{base_url}}/reimbursements/{{reimbursement_id}}/attachments",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "reimbursements",
-                "{{reimbursement_id}}",
-                "attachments"
-              ]
+              "host": ["{{base_url}}"],
+              "path": ["reimbursements", "{{reimbursement_id}}", "attachments"]
             }
           },
           "response": []
@@ -712,48 +612,10 @@
       ]
     }
   ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{token}}",
-        "type": "string"
-      }
-    ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
   "variable": [
     {
       "key": "base_url",
       "value": "http://localhost:3000"
-    },
-    {
-      "key": "token",
-      "value": ""
     },
     {
       "key": "user_id",
