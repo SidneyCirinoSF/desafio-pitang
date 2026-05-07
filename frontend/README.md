@@ -4,19 +4,19 @@ Interface web para o sistema de reembolso corporativo, construída com React, Ty
 
 ## Tecnologias
 
-| Camada               | Tecnologia                                                   |
-| -------------------- | ------------------------------------------------------------ |
-| Runtime / Bundler    | [Bun](https://bun.com/) / [Vite 8](https://vite.dev/)        |
-| Framework            | [React 19](https://react.dev/)                               |
-| Linguagem            | [TypeScript 6](https://www.typescriptlang.org/)              |
-| Roteamento           | [TanStack Router](https://tanstack.com/router)               |
-| Estado do Servidor   | [TanStack Query](https://tanstack.com/query)                 |
-| Tabelas              | [TanStack Table](https://tanstack.com/table)                 |
+| Camada               | Tecnologia                                                                     |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Runtime / Bundler    | [Bun](https://bun.com/) / [Vite 8](https://vite.dev/)                          |
+| Framework            | [React 19](https://react.dev/)                                                 |
+| Linguagem            | [TypeScript 6](https://www.typescriptlang.org/)                                |
+| Roteamento           | [TanStack Router](https://tanstack.com/router)                                 |
+| Estado do Servidor   | [TanStack Query](https://tanstack.com/query)                                   |
+| Tabelas              | [TanStack Table](https://tanstack.com/table)                                   |
 | UI                   | [shadcnUI](https://ui.shadcn.com/) + [TailwindCSS 4](https://tailwindcss.com/) |
-| Formulários          | [react-hook-form](https://react-hook-form.com/) + [Zod](https://zod.dev/) |
-| Ícones               | [Lucide React](https://lucide.dev/)                          |
-| Notificações         | [Sonner](https://sonner.emilkowal.ski/) (toast)              |
-| Linting / Formatação | [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/) |
+| Formulários          | [react-hook-form](https://react-hook-form.com/) + [Zod](https://zod.dev/)      |
+| Ícones               | [Lucide React](https://lucide.dev/)                                            |
+| Notificações         | [Sonner](https://sonner.emilkowal.ski/) (toast)                                |
+| Linting / Formatação | [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)               |
 
 ## Arquitetura
 
@@ -105,7 +105,7 @@ src/
 ### Pré-requisitos
 
 - [Bun](https://bun.com/) instalado
-- Backend rodando 
+- Backend rodando
 
 ### Setup
 
@@ -157,6 +157,7 @@ O fluxo de autenticação utiliza **HTTP-only cookies** gerenciados pelo backend
 ```
 
 **Características do cookie:**
+
 - `HttpOnly: true` — inacessível via JavaScript (proteção XSS)
 - `SameSite: Lax` — proteção CSRF
 - `Max-Age: 3600` — expira em 1 hora (mesmo tempo do JWT)
@@ -169,6 +170,7 @@ O fluxo de autenticação utiliza **HTTP-only cookies** gerenciados pelo backend
 - Se o cookie for inválido/expirado → `user` fica `null` → mostra login
 
 **Proteção de rotas:**
+
 - `_authenticated.tsx` (layout): `beforeLoad` chama `GET /auth/me` — se falhar → redireciona para `/`
 - `index.tsx` (login): `beforeLoad` chama `GET /auth/me` — se sucesso → redireciona para `/dashboard`
 - `dashboard.tsx`: `beforeLoad` → mesmo mecanismo
@@ -177,51 +179,51 @@ O fluxo de autenticação utiliza **HTTP-only cookies** gerenciados pelo backend
 
 ### Visibilidade de menus no Sidebar
 
-| Perfil           | Grupos no Menu                                                              |
-| ---------------- | --------------------------------------------------------------------------- |
-| **COLLABORATOR** | Reimbursements: New, My Reimbursements                                      |
-| **MANAGER**      | Reimbursements: All Reimbursements                                          |
-| **FINANCE**      | Reimbursements: All Reimbursements                                          |
-| **ADMIN**        | Reimbursements: All Reimbursements + Administration: Users, Categories      |
+| Perfil           | Grupos no Menu                                                         |
+| ---------------- | ---------------------------------------------------------------------- |
+| **COLLABORATOR** | Reimbursements: New, My Reimbursements                                 |
+| **MANAGER**      | Reimbursements: All Reimbursements                                     |
+| **FINANCE**      | Reimbursements: All Reimbursements                                     |
+| **ADMIN**        | Reimbursements: All Reimbursements + Administration: Users, Categories |
 
 ### Ações disponíveis por perfil e status
 
-| Status    | COLLABORATOR                    | MANAGER           | FINANCE       | ADMIN   |
-| --------- | ------------------------------- | ----------------- | ------------- | ------- |
-| PENDING   | Submit, Edit, Cancel, +Attachment | —               | —             | View    |
-| SUBMITTED | Cancel, +Attachment             | Approve, Reject   | —             | View    |
-| APPROVED  | —                               | —                 | Mark as Paid  | View    |
-| REJECTED  | —                               | —                 | —             | View    |
-| PAID      | —                               | —                 | —             | View    |
-| CANCELLED | —                               | —                 | —             | View    |
+| Status    | COLLABORATOR                      | MANAGER         | FINANCE      | ADMIN |
+| --------- | --------------------------------- | --------------- | ------------ | ----- |
+| PENDING   | Submit, Edit, Cancel, +Attachment | —               | —            | View  |
+| SUBMITTED | Cancel, +Attachment               | Approve, Reject | —            | View  |
+| APPROVED  | —                                 | —               | Mark as Paid | View  |
+| REJECTED  | —                                 | —               | —            | View  |
+| PAID      | —                                 | —               | —            | View  |
+| CANCELLED | —                                 | —               | —            | View  |
 
 ## Rotas do Frontend
 
-| Rota                     | Página                                  | Perfis                                     |
-| ------------------------ | --------------------------------------- | ------------------------------------------ |
-| `/`                      | Login (redireciona para dashboard se logado) | Público                                |
-| `/dashboard`             | Dashboard com métricas (submitted, approved, rejected, paid) | Todos                          |
-| `/reimbursements`        | Lista de solicitações (tabela paginada com sort/filter/search) | Todos                              |
-| `/reimbursements/new`    | Criar nova solicitação (form com dropdown de categorias ativas) | COLLABORATOR                           |
-| `/reimbursements/$id`    | Detalhes da solicitação + histórico + anexos + ações contextuais | Todos                             |
-| `/users`                 | CRUD de usuários (tabela + dialog create/edit/delete) | ADMIN                                    |
-| `/categories`            | CRUD de categorias (tabela + dialog create/edit/delete) | ADMIN                                 |
+| Rota                  | Página                                                           | Perfis       |
+| --------------------- | ---------------------------------------------------------------- | ------------ |
+| `/`                   | Login (redireciona para dashboard se logado)                     | Público      |
+| `/dashboard`          | Dashboard com métricas (submitted, approved, rejected, paid)     | Todos        |
+| `/reimbursements`     | Lista de solicitações (tabela paginada com sort/filter/search)   | Todos        |
+| `/reimbursements/new` | Criar nova solicitação (form com dropdown de categorias ativas)  | COLLABORATOR |
+| `/reimbursements/$id` | Detalhes da solicitação + histórico + anexos + ações contextuais | Todos        |
+| `/users`              | CRUD de usuários (tabela + dialog create/edit/delete)            | ADMIN        |
+| `/categories`         | CRUD de categorias (tabela + dialog create/edit/delete)          | ADMIN        |
 
 ## Componentes principais
 
-| Componente           | Descrição                                                                                     |
-| -------------------- | --------------------------------------------------------------------------------------------- |
-| `AppSidebar`         | Sidebar colapsável com logo, navegação por perfil e menu do usuário. Responsivo (Sheet mobile). |
-| `DataTable<T>`       | Tabela genérica com server-side pagination, sort (colunas clicáveis ▲/▼), estados de loading/erro/vazio. |
-| `PageHeader`         | Barra de busca + dropdown de filtro (condicional: só renderiza se `onSearch` for passado).      |
-| `StatusBadge`        | Badge colorido: PENDING=amber, SUBMITTED=blue, APPROVED=green, REJECTED=red, PAID=purple, CANCELLED=gray. |
-| `ConfirmDialog`      | Diálogo de confirmação reutilizável (título, descrição, confirmar/cancelar, variante destructive). |
-| `Breadcrumbs`        | Trilha de navegação dinâmica baseada em `useRouterState().location.pathname`.                   |
-| `NavMain`            | Grupos de menu colapsáveis com ícones do Lucide.                                               |
-| `NavUser`            | Avatar com iniciais + dropdown (nome, email, perfil, Sign out).                                |
-| `UserForm`           | Formulário criar/editar usuário (nome, email, senha, perfil). Validação Zod.                   |
-| `CategoryForm`       | Formulário criar/editar categoria (nome, ativo). Validação Zod.                                |
-| `AttachmentUpload`   | Formulário de upload de anexo (nomeArquivo, urlArquivo, tipoArquivo).                           |
+| Componente         | Descrição                                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------------------------- |
+| `AppSidebar`       | Sidebar colapsável com logo, navegação por perfil e menu do usuário. Responsivo (Sheet mobile).           |
+| `DataTable<T>`     | Tabela genérica com server-side pagination, sort (colunas clicáveis ▲/▼), estados de loading/erro/vazio.  |
+| `PageHeader`       | Barra de busca + dropdown de filtro (condicional: só renderiza se `onSearch` for passado).                |
+| `StatusBadge`      | Badge colorido: PENDING=amber, SUBMITTED=blue, APPROVED=green, REJECTED=red, PAID=purple, CANCELLED=gray. |
+| `ConfirmDialog`    | Diálogo de confirmação reutilizável (título, descrição, confirmar/cancelar, variante destructive).        |
+| `Breadcrumbs`      | Trilha de navegação dinâmica baseada em `useRouterState().location.pathname`.                             |
+| `NavMain`          | Grupos de menu colapsáveis com ícones do Lucide.                                                          |
+| `NavUser`          | Avatar com iniciais + dropdown (nome, email, perfil, Sign out).                                           |
+| `UserForm`         | Formulário criar/editar usuário (nome, email, senha, perfil). Validação Zod.                              |
+| `CategoryForm`     | Formulário criar/editar categoria (nome, ativo). Validação Zod.                                           |
+| `AttachmentUpload` | Formulário de upload de anexo (nomeArquivo, urlArquivo, tipoArquivo).                                     |
 
 ## Formulários e Validação (Zod)
 
@@ -246,6 +248,7 @@ const form = useForm<ReimbursementFormData>({
 ```
 
 **Schemas implementados:**
+
 - **Login**: `email` (email válido) + `senha` (min 1)
 - **Reimbursement (create)**: `categoriaId` (UUID), `descricao` (min 1), `valor` (positivo), `dataDespesa` (YYYY-MM-DD, sem datas futuras)
 - **Reimbursement (edit)**: `descricao` (min 1), `valor` (positivo)
@@ -255,6 +258,7 @@ const form = useForm<ReimbursementFormData>({
 - **Attachment**: `nomeArquivo` (min 1), `urlArquivo` (URL válida), `tipoArquivo` (enum: PDF/IMAGE/OTHER)
 
 **Feedback visual:**
+
 - **Inline**: mensagens de erro abaixo de cada campo (`FormMessage`)
 - **Toast**: notificações de sucesso (verde) ou erro (vermelho) via `sonner`
 - **Loading**: botões desabilitados com texto "Saving...", spinner no DataTable
@@ -269,6 +273,7 @@ PENDING ──submit──> SUBMITTED ──approve──> APPROVED ──pay─
 ```
 
 Cada transição:
+
 - É acionada por botões contextuais visíveis apenas para o perfil correto (ex: [Approve] só aparece para MANAGER quando status = SUBMITTED)
 - Passa por um `ConfirmDialog` antes de executar
 - Chama o endpoint correspondente via `useMutation`
@@ -292,6 +297,7 @@ Cada transição:
 ```
 
 **Hooks de query (leitura):**
+
 - `useReimbursements(params)` — lista paginada, query string automática
 - `useReimbursement(id)` — solicitação única + histórico + anexos
 - `useUsers(params)` — lista paginada
@@ -300,6 +306,7 @@ Cada transição:
 - Dashboard: `useQuery(["reimbursements", "stats"])` direto no componente
 
 **Hooks de mutation (escrita):**
+
 - Submit, approve, reject, pay, cancel, edit, addAttachment → `useReimbursement(id)`
 - Create, update, delete user → `useCreateUser()`, `useUpdateUser()`, `useDeleteUser()`
 - Create, update, delete category → `useCreateCategory()`, `useUpdateCategory()`, `useDeleteCategory()`
@@ -308,27 +315,92 @@ Cada transição:
 
 Todas as páginas de listagem seguem o mesmo padrão de 3 estados:
 
-| Estado   | Renderização                                                        |
-| -------- | ------------------------------------------------------------------- |
-| Loading  | Spinner animado no centro da tabela (`<Loader2 className="animate-spin" />`) |
-| Erro     | Card com mensagem de erro + botão "Retry"                           |
-| Vazio    | "No data found." no centro da tabela                                |
-| Dados    | Tabela com linhas clicáveis + controles de paginação                |
+| Estado  | Renderização                                                                 |
+| ------- | ---------------------------------------------------------------------------- |
+| Loading | Spinner animado no centro da tabela (`<Loader2 className="animate-spin" />`) |
+| Erro    | Card com mensagem de erro + botão "Retry"                                    |
+| Vazio   | "No data found." no centro da tabela                                         |
+| Dados   | Tabela com linhas clicáveis + controles de paginação                         |
+
+## Testes Automatizados
+
+Testes de componentes e hooks utilizando Vitest, React Testing Library e jsdom.
+
+### Ferramentas
+
+| Ferramenta                   | Uso                                             |
+| ---------------------------- | ----------------------------------------------- |
+| [Vitest](https://vitest.dev) | Test runner (API compatível com Jest)           |
+| React Testing Library        | Renderização de componentes React em memória    |
+| user-event                   | Simulação realista de interações do usuário     |
+| jsdom                        | Ambiente de navegador simulado (DOM em memória) |
+
+### Instalação
+
+```bash
+bun add -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+```
+
+### Configuração
+
+A seção `test` no `vite.config.ts` define o ambiente e o arquivo de setup:
+
+```typescript
+test: {
+  globals: true,
+  environment: "jsdom",
+  setupFiles: "./src/__tests__/setup.ts",
+  css: false,
+},
+```
+
+O arquivo `src/__tests__/setup.ts` carrega os matchers do `@testing-library/jest-dom`:
+
+```typescript
+import "@testing-library/jest-dom/vitest";
+```
+
+### Arquivos de teste
+
+| Arquivo                                     | O que testa                                 | Cenários verificados                                                                                                                                       |
+| ------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/__tests__/login-form.test.tsx`         | Comportamento do formulário de login        | Campos vazios mostram erros de validação; botão exibe "Signing in..." durante loading; submit com dados válidos chama `login()` e navega para `/dashboard` |
+| `src/__tests__/reimbursement-form.test.tsx` | Validação do formulário de nova solicitação | Erros de validação com campos vazios; bloqueio de data futura                                                                                              |
+| `src/__tests__/use-auth.test.tsx`           | Hook `useAuth` e `AuthProvider`             | Estado inicial (loading, user null); login bem-sucedido define usuário; login com erro não define usuário; logout limpa estado e chama API                 |
+
+### Estratégia de mocks
+
+Cada arquivo de teste utiliza `vi.mock()` para substituir módulos externos e isolar o componente testado:
+
+- **`@tanstack/react-router`** — substituído para evitar dependência do roteador real (`useNavigate`, `createFileRoute`)
+- **`@/hooks/use-auth`** — substituído para controlar estado de autenticação nos testes de formulário
+- **`@/lib/api`** — substituído para simular respostas da API sem requisições reais
+- **`@/hooks/use-active-categories`** — substituído com dados mock de categorias
+- **`sonner`** — substituído para evitar renderização de toasts no ambiente de teste
+
+### Como executar
+
+```bash
+bun run test          # executa uma vez
+bun run test:watch    # re-executa ao salvar arquivos
+```
 
 ## Scripts
 
-| Comando               | Descrição                                |
-| --------------------- | ---------------------------------------- |
-| `bun run dev`         | Iniciar servidor de desenvolvimento      |
-| `bun run build`       | Compilar TypeScript + build Vite         |
-| `bun run preview`     | Servir build de produção localmente      |
-| `bun run lint`        | Executar ESLint                          |
-| `bun run lint:fix`    | Corrigir problemas de lint               |
-| `bun run format`      | Formatar código com Prettier             |
-| `bun run format:check`| Verificar formatação (CI)                |
+| Comando                | Descrição                           |
+| ---------------------- | ----------------------------------- |
+| `bun run dev`          | Iniciar servidor de desenvolvimento |
+| `bun run build`        | Compilar TypeScript + build Vite    |
+| `bun run preview`      | Servir build de produção localmente |
+| `bun run test`         | Executar testes automatizados       |
+| `bun run test:watch`   | Executar testes em modo watch       |
+| `bun run lint`         | Executar ESLint                     |
+| `bun run lint:fix`     | Corrigir problemas de lint          |
+| `bun run format`       | Formatar código com Prettier        |
+| `bun run format:check` | Verificar formatação (CI)           |
 
 ## Variáveis de Ambiente
 
-| Variável      | Descrição                 | Padrão                   |
-| ------------- | ------------------------- | ------------------------ |
-| `VITE_API_URL`| URL base da API backend   | `http://localhost:3000`  |
+| Variável       | Descrição               | Padrão                  |
+| -------------- | ----------------------- | ----------------------- |
+| `VITE_API_URL` | URL base da API backend | `http://localhost:3000` |
