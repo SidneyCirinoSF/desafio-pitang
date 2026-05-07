@@ -1,0 +1,7 @@
+node_modules
+dist
+out
+src/generated
+src/routeTree.gen.ts
+bun.lock
+coverage
