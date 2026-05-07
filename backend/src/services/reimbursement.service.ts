@@ -304,7 +304,7 @@ export async function cancelReimbursement(id: string, userId: string) {
 
   checkOwnership(solicitacao.solicitanteId, userId);
 
-  if (solicitacao.status !== "SUBMITTED") {
+  if (solicitacao.status !== "PENDING") {
     throw new AppError(
       "Somente solicitações que ainda não foram submetidas para análise, podem ser canceladas",
       400,
@@ -392,4 +392,20 @@ export async function getAttachments(id: string, userId: string, perfil: string)
     where: { solicitacaoId: id },
     orderBy: { criadoEm: "desc" },
   });
+}
+
+export async function getStats(userId: string, perfil: string) {
+  const where: Record<string, unknown> = { deletadoEm: null };
+  if (perfil === "COLLABORATOR") {
+    where.solicitanteId = userId;
+  }
+
+  const [submitted, approved, rejected, paid] = await Promise.all([
+    prisma.solicitacaoReembolso.count({ where: { ...where, status: "SUBMITTED" } }),
+    prisma.solicitacaoReembolso.count({ where: { ...where, status: "APPROVED" } }),
+    prisma.solicitacaoReembolso.count({ where: { ...where, status: "REJECTED" } }),
+    prisma.solicitacaoReembolso.count({ where: { ...where, status: "PAID" } }),
+  ]);
+
+  return { submitted, approved, rejected, paid };
 }

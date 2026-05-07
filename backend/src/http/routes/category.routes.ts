@@ -11,12 +11,12 @@ import { authMiddleware, requirePermission, PERMISSIONS } from "../middlewares/a
 const router = Router();
 
 router.use(authMiddleware);
-router.use(requirePermission(PERMISSIONS.MANAGE_CATEGORIES));
 
-router.post("/", createCategory);
 router.get("/", getCategories);
 router.get("/:id", getCategoryById);
-router.patch("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+
+router.post("/", requirePermission(PERMISSIONS.MANAGE_CATEGORIES), createCategory);
+router.patch("/:id", requirePermission(PERMISSIONS.MANAGE_CATEGORIES), updateCategory);
+router.delete("/:id", requirePermission(PERMISSIONS.MANAGE_CATEGORIES), deleteCategory);
 
 export { router as categoryRoutes };

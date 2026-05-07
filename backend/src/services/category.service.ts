@@ -7,8 +7,13 @@ export async function listCategories(params: {
   sort?: string;
   order: "asc" | "desc";
   search?: string;
+  ativo?: boolean;
 }) {
   const where: Record<string, unknown> = { deletadoEm: null };
+
+  if (params.ativo !== undefined) {
+    where.ativo = params.ativo;
+  }
 
   if (params.search) {
     where.nome = { contains: params.search };

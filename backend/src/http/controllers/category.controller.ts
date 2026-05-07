@@ -6,8 +6,10 @@ import { paginationSchema } from "../schemas/query.schema.js";
 import * as categoryService from "../../services/category.service.js";
 
 export async function getCategories(req: Request, res: Response) {
-  const params = paginationSchema.parse(req.query);
-  const result = await categoryService.listCategories(params);
+  const pagination = paginationSchema.parse(req.query);
+  const ativoParam = req.query["ativo"];
+  const ativo = ativoParam === "true" ? true : ativoParam === "false" ? false : undefined;
+  const result = await categoryService.listCategories({ ...pagination, ativo });
   return res.json(result);
 }
 

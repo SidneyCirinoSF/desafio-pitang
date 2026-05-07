@@ -115,3 +115,8 @@ export async function getAttachments(req: AuthRequest, res: Response) {
   const anexos = await reimbursementService.getAttachments(id, req.userId, req.userPerfil);
   return res.json(anexos);
 }
+
+export async function getStats(req: AuthRequest, res: Response) {
+  const stats = await reimbursementService.getStats(req.userId, req.userPerfil);
+  return res.json(stats);
+}

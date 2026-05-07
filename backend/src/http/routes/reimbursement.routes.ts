@@ -12,6 +12,7 @@ import {
   getHistory,
   addAttachment,
   getAttachments,
+  getStats,
 } from "../controllers/reimbursement.controller.js";
 import {
   authMiddleware,
@@ -22,6 +23,12 @@ import {
 
 const router = Router();
 router.use(authMiddleware);
+
+router.get(
+  "/stats",
+  requireAnyPermission(PERMISSIONS.VIEW_OWN_REQUEST, PERMISSIONS.VIEW_ALL_REQUESTS),
+  getStats,
+);
 
 router.get(
   "/",
