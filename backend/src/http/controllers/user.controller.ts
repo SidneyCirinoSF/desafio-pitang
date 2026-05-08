@@ -12,7 +12,7 @@ export async function login(req: Request, res: Response) {
   res.cookie("token", result.token, {
     httpOnly: true,
     secure: process.env["NODE_ENV"] === "production",
-    sameSite: "lax",
+    sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
     path: "/",
     maxAge: 3600000,
   });
