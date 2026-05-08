@@ -4,7 +4,10 @@ export const createReimbursementSchema = z.object({
   categoriaId: z.string().uuid("Categoria inválida"),
   descricao: z.string().min(1, "Descrição obrigatória"),
   valor: z.number().positive("Valor deve ser positivo"),
-  dataDespesa: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida"),
+  dataDespesa: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
+    .refine((val) => new Date(val) <= new Date(), "Data não pode ser futura"),
 });
 
 export const updateReimbursementSchema = z.object({
@@ -14,6 +17,7 @@ export const updateReimbursementSchema = z.object({
   dataDespesa: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida")
+    .refine((val) => new Date(val) <= new Date(), "Data não pode ser futura")
     .optional(),
 });
 
