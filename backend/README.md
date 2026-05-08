@@ -122,13 +122,13 @@ A autenticação utiliza **JWT armazenado em cookie HTTP-only**. Este modelo pro
 
 ### Propriedades do cookie
 
-| Propriedade | Valor                   | Motivo                                         |
-| ----------- | ----------------------- | ---------------------------------------------- |
-| `HttpOnly`  | `true`                  | Inacessível via `document.cookie` (protege XSS) |
-| `SameSite`  | `Lax`                   | Bloqueia envio em requisições cross-site (protege CSRF) |
-| `Path`      | `/`                     | Disponível em todas as rotas da API            |
-| `Max-Age`   | `3600` (1 hora)         | Mesmo tempo de expiração do JWT                 |
-| `Secure`    | `true` em produção      | Só enviado via HTTPS                            |
+| Propriedade | Valor              | Motivo                                                  |
+| ----------- | ------------------ | ------------------------------------------------------- |
+| `HttpOnly`  | `true`             | Inacessível via `document.cookie` (protege XSS)         |
+| `SameSite`  | `Lax`              | Bloqueia envio em requisições cross-site (protege CSRF) |
+| `Path`      | `/`                | Disponível em todas as rotas da API                     |
+| `Max-Age`   | `3600` (1 hora)    | Mesmo tempo de expiração do JWT                         |
+| `Secure`    | `true` em produção | Só enviado via HTTPS                                    |
 
 ### CORS
 
@@ -138,22 +138,22 @@ O token contém o `id` e `perfil` do usuário (`{ sub, perfil }`).
 
 ## Perfis e Permissões (RBAC)
 
-| Perfil           | Permissões                                                             |
-| ---------------- | ---------------------------------------------------------------------- |
-| **COLLABORATOR** | Criar, editar, visualizar e cancelar suas próprias solicitações        |
-| **MANAGER**      | Visualizar todas as solicitações, aprovar ou rejeitar                  |
-| **FINANCE**      | Visualizar todas as solicitações, marcar como pago                     |
-| **ADMIN**        | Gerenciar usuários, categorias, ver todas as solicitações              |
+| Perfil           | Permissões                                                      |
+| ---------------- | --------------------------------------------------------------- |
+| **COLLABORATOR** | Criar, editar, visualizar e cancelar suas próprias solicitações |
+| **MANAGER**      | Visualizar todas as solicitações, aprovar ou rejeitar           |
+| **FINANCE**      | Visualizar todas as solicitações, marcar como pago              |
+| **ADMIN**        | Gerenciar usuários, categorias, ver todas as solicitações       |
 
 ## Endpoints da API
 
 ### Autenticação
 
-| Método | Rota           | Descrição                                  | Autenticação |
-| ------ | -------------- | ------------------------------------------ | ------------ |
+| Método | Rota           | Descrição                                            | Autenticação |
+| ------ | -------------- | ---------------------------------------------------- | ------------ |
 | POST   | `/auth/login`  | Login (define cookie HTTP-only + retorna `{ user }`) | Não          |
-| POST   | `/auth/logout` | Logout (limpa o cookie)                    | Não          |
-| GET    | `/auth/me`     | Retorna o usuário da sessão atual          | Sim          |
+| POST   | `/auth/logout` | Logout (limpa o cookie)                              | Não          |
+| GET    | `/auth/me`     | Retorna o usuário da sessão atual                    | Sim          |
 
 **Login body:** `{ "email": "...", "senha": "..." }`
 
@@ -171,61 +171,61 @@ O token contém o `id` e `perfil` do usuário (`{ sub, perfil }`).
 
 ### Categorias
 
-| Método | Rota              | Descrição                                        | Perfil        |
-| ------ | ----------------- | ------------------------------------------------ | ------------- |
-| GET    | `/categories`     | Listar categorias                                | Autenticado   |
-| GET    | `/categories/:id` | Obter categoria por ID                           | Autenticado   |
-| POST   | `/categories`     | Criar categoria                                  | ADMIN         |
-| PATCH  | `/categories/:id` | Atualizar categoria                              | ADMIN         |
-| DELETE | `/categories/:id` | Soft delete de categoria (se não estiver em uso) | ADMIN         |
+| Método | Rota              | Descrição                                        | Perfil      |
+| ------ | ----------------- | ------------------------------------------------ | ----------- |
+| GET    | `/categories`     | Listar categorias                                | Autenticado |
+| GET    | `/categories/:id` | Obter categoria por ID                           | Autenticado |
+| POST   | `/categories`     | Criar categoria                                  | ADMIN       |
+| PATCH  | `/categories/:id` | Atualizar categoria                              | ADMIN       |
+| DELETE | `/categories/:id` | Soft delete de categoria (se não estiver em uso) | ADMIN       |
 
 **Query params para `GET /categories`:**
 Além dos parâmetros de paginação (veja abaixo), aceita:
 
-| Parâmetro | Tipo    | Descrição                          |
-| --------- | ------- | ---------------------------------- |
+| Parâmetro | Tipo    | Descrição                                     |
+| --------- | ------- | --------------------------------------------- |
 | `ativo`   | boolean | Filtra por categorias ativas (`true`/`false`) |
 
 ### Solicitações de Reembolso
 
-| Método | Rota                              | Descrição             | Perfil                                   |
-| ------ | --------------------------------- | --------------------- | ---------------------------------------- |
-| GET    | `/reimbursements`                 | Listar solicitações   | COLLABORATOR (próprias) / outros (todas) |
-| POST   | `/reimbursements`                 | Criar solicitação     | COLLABORATOR                             |
-| GET    | `/reimbursements/stats`           | Métricas (submitted, approved, rejected, paid) | Todos                        |
-| GET    | `/reimbursements/:id`             | Obter solicitação     | COLLABORATOR (própria) / outros (todas)  |
-| PATCH  | `/reimbursements/:id`             | Editar solicitação    | COLLABORATOR (própria, pendente)         |
-| POST   | `/reimbursements/:id/submit`      | Submeter para análise | COLLABORATOR (própria, pendente)         |
-| POST   | `/reimbursements/:id/cancel`      | Cancelar solicitação  | COLLABORATOR (própria, pendente)         |
-| POST   | `/reimbursements/:id/approve`     | Aprovar solicitação   | MANAGER                                  |
-| POST   | `/reimbursements/:id/reject`      | Rejeitar solicitação  | MANAGER                                  |
-| POST   | `/reimbursements/:id/pay`         | Marcar como pago      | FINANCE                                  |
-| GET    | `/reimbursements/:id/history`     | Histórico de ações    | Todos com acesso à solicitação           |
-| POST   | `/reimbursements/:id/attachments` | Adicionar anexo       | COLLABORATOR (própria)                   |
-| GET    | `/reimbursements/:id/attachments` | Listar anexos         | Todos com acesso à solicitação           |
+| Método | Rota                              | Descrição                                      | Perfil                                   |
+| ------ | --------------------------------- | ---------------------------------------------- | ---------------------------------------- |
+| GET    | `/reimbursements`                 | Listar solicitações                            | COLLABORATOR (próprias) / outros (todas) |
+| POST   | `/reimbursements`                 | Criar solicitação                              | COLLABORATOR                             |
+| GET    | `/reimbursements/stats`           | Métricas (submitted, approved, rejected, paid) | Todos                                    |
+| GET    | `/reimbursements/:id`             | Obter solicitação                              | COLLABORATOR (própria) / outros (todas)  |
+| PATCH  | `/reimbursements/:id`             | Editar solicitação                             | COLLABORATOR (própria, pendente)         |
+| POST   | `/reimbursements/:id/submit`      | Submeter para análise                          | COLLABORATOR (própria, pendente)         |
+| POST   | `/reimbursements/:id/cancel`      | Cancelar solicitação                           | COLLABORATOR (própria, pendente)         |
+| POST   | `/reimbursements/:id/approve`     | Aprovar solicitação                            | MANAGER                                  |
+| POST   | `/reimbursements/:id/reject`      | Rejeitar solicitação                           | MANAGER                                  |
+| POST   | `/reimbursements/:id/pay`         | Marcar como pago                               | FINANCE                                  |
+| GET    | `/reimbursements/:id/history`     | Histórico de ações                             | Todos com acesso à solicitação           |
+| POST   | `/reimbursements/:id/attachments` | Adicionar anexo                                | COLLABORATOR (própria)                   |
+| GET    | `/reimbursements/:id/attachments` | Listar anexos                                  | Todos com acesso à solicitação           |
 
 ### Parâmetros de paginação, ordenação e busca
 
 Todos os endpoints `GET /reimbursements`, `GET /users` e `GET /categories` aceitam os seguintes query params:
 
-| Parâmetro | Tipo               | Padrão      | Descrição                                  |
-| --------- | ------------------ | ----------- | ------------------------------------------ |
-| `page`    | inteiro (positivo) | `1`         | Número da página                           |
-| `limit`   | inteiro (1-100)    | `10`        | Itens por página                           |
-| `sort`    | string             | (nenhum)    | Campo para ordenação (ex: `criadoEm`, `valor`, `nome`) |
-| `order`   | `asc` ou `desc`    | `desc`      | Direção da ordenação                       |
-| `search`  | string             | (nenhum)    | Termo de busca textual                     |
+| Parâmetro | Tipo               | Padrão   | Descrição                                              |
+| --------- | ------------------ | -------- | ------------------------------------------------------ |
+| `page`    | inteiro (positivo) | `1`      | Número da página                                       |
+| `limit`   | inteiro (1-100)    | `10`     | Itens por página                                       |
+| `sort`    | string             | (nenhum) | Campo para ordenação (ex: `criadoEm`, `valor`, `nome`) |
+| `order`   | `asc` ou `desc`    | `desc`   | Direção da ordenação                                   |
+| `search`  | string             | (nenhum) | Termo de busca textual                                 |
 
 ### Filtros específicos de solicitações
 
 `GET /reimbursements` também aceita:
 
-| Parâmetro     | Tipo          | Descrição                                    |
-| ------------- | ------------- | ------------------------------------------- |
-| `status`      | enum          | `PENDING`, `SUBMITTED`, `APPROVED`, `REJECTED`, `PAID`, `CANCELLED` |
-| `categoriaId` | UUID          | Filtra por categoria                        |
-| `dataInicio`  | `YYYY-MM-DD`  | Data mínima da despesa                      |
-| `dataFim`     | `YYYY-MM-DD`  | Data máxima da despesa                      |
+| Parâmetro     | Tipo         | Descrição                                                           |
+| ------------- | ------------ | ------------------------------------------------------------------- |
+| `status`      | enum         | `PENDING`, `SUBMITTED`, `APPROVED`, `REJECTED`, `PAID`, `CANCELLED` |
+| `categoriaId` | UUID         | Filtra por categoria                                                |
+| `dataInicio`  | `YYYY-MM-DD` | Data mínima da despesa                                              |
+| `dataFim`     | `YYYY-MM-DD` | Data máxima da despesa                                              |
 
 ### Fluxo de Status
 
@@ -293,8 +293,8 @@ Endpoints de listagem retornam o formato:
 ```json
 {
   "data": [
-    { "id": "...", "descricao": "Almoço", "valor": 120.50, "status": "PENDING" },
-    { "id": "...", "descricao": "Transporte", "valor": 45.00, "status": "APPROVED" }
+    { "id": "...", "descricao": "Almoço", "valor": 120.5, "status": "PENDING" },
+    { "id": "...", "descricao": "Transporte", "valor": 45.0, "status": "APPROVED" }
   ],
   "meta": {
     "page": 1,
@@ -340,12 +340,52 @@ Endpoints de listagem retornam o formato:
 }
 ```
 
+## Testes Automatizados
+
+Testes de integração da API utilizando Supertest e o test runner nativo do Bun.
+
+### Ferramentas
+
+| Ferramenta                                      | Uso                                                             |
+| ----------------------------------------------- | --------------------------------------------------------------- |
+| [Supertest](https://github.com/ladjs/supertest) | Requisições HTTP simuladas (`request(app).post(...).send(...)`) |
+| Bun Test Runner                                 | Execução dos testes (`describe`, `test`, `expect`, `beforeAll`) |
+| `@types/supertest`                              | Tipos TypeScript para o Supertest                               |
+
+### Banco de dados de teste
+
+Os testes utilizam um banco SQLite **separado** (`test.db`) para não interferir nos dados de desenvolvimento. O arquivo `__tests__/setup.ts` é carregado via `--preload` e:
+
+1. Define `DATABASE_URL=file:./test.db` e `JWT_SECRET=test-secret-key`
+2. Remove o banco da execução anterior (se existir)
+3. Executa `db:push` para criar as tabelas
+4. Executa `db:seed` para popular com dados iniciais
+5. Ao final de todos os testes (`afterAll`), desconecta o Prisma e remove o banco
+
+### Arquivos de teste
+
+| Arquivo                            | O que testa               | Cenários verificados                                                                                                                                                                         |
+| ---------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `__tests__/auth.test.ts`           | Autenticação              | Login com credenciais válidas (200 + cookie), senha inválida (401), email inexistente (404), campos vazios (400 Zod), `/auth/me` com/sem cookie, logout                                      |
+| `__tests__/reimbursements.test.ts` | Solicitações de reembolso | Criar (201 + PENDING), bloquear valor zero (400), categoria inválida (400), fluxo completo (criar→submeter→aprovar→pagar), RBAC (collab não aprova → 403, manager não paga → 403), histórico |
+| `__tests__/users.test.ts`          | CRUD de usuários          | Listar (ADMIN → 200, COLLABORATOR → 403), criar (201), email duplicado (409), senha curta (400 Zod)                                                                                          |
+| `__tests__/categories.test.ts`     | CRUD de categorias        | Listar (qualquer perfil → 200), criar (ADMIN → 201, COLLABORATOR → 403)                                                                                                                      |
+
+### Como executar
+
+```bash
+bun run test          # executa uma vez
+bun run test:watch    # re-executa ao salvar arquivos
+```
+
 ## Scripts
 
 | Comando               | Descrição                          |
 | --------------------- | ---------------------------------- |
 | `bun run dev`         | Iniciar servidor com hot reload    |
 | `bun run start`       | Iniciar servidor em produção       |
+| `bun run test`        | Executar testes automatizados      |
+| `bun run test:watch`  | Executar testes em modo watch      |
 | `bun run db:generate` | Gerar cliente Prisma               |
 | `bun run db:push`     | Sincronizar schema com banco       |
 | `bun run db:migrate`  | Criar migration a partir do schema |
@@ -357,9 +397,9 @@ Endpoints de listagem retornam o formato:
 
 ## Variáveis de Ambiente
 
-| Variável       | Descrição                     | Padrão                   |
-| -------------- | ----------------------------- | ------------------------ |
-| `DATABASE_URL` | URL de conexão do banco       | `file:./dev.db`          |
-| `JWT_SECRET`   | Chave secreta para tokens JWT | (obrigatório)            |
-| `CORS_ORIGIN`  | Origem permitida para CORS    | `http://localhost:5173`  |
-| `PORT`         | Porta do servidor             | `3000`                   |
+| Variável       | Descrição                     | Padrão                  |
+| -------------- | ----------------------------- | ----------------------- |
+| `DATABASE_URL` | URL de conexão do banco       | `file:./dev.db`         |
+| `JWT_SECRET`   | Chave secreta para tokens JWT | (obrigatório)           |
+| `CORS_ORIGIN`  | Origem permitida para CORS    | `http://localhost:5173` |
+| `PORT`         | Porta do servidor             | `3000`                  |

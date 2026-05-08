@@ -15,7 +15,9 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "bun run prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test": "bun test --preload ./__tests__/setup.ts",
+    "test:watch": "bun test --watch --preload ./__tests__/setup.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",
@@ -31,11 +33,12 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
-    "@types/bun": "latest",
+    "@types/bun": "^1.3.13",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/supertest": "^7.2.0",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
     "@typescript-eslint/parser": "^8.59.1",
     "dotenv": "^17.4.2",
@@ -43,6 +46,7 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.3",
     "prisma": "^7.8.0",
+    "supertest": "^7.2.2",
     "typescript-eslint": "^8.59.1"
   },
   "peerDependencies": {
