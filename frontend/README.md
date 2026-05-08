@@ -61,7 +61,8 @@ src/
 │   ├── confirm-dialog.tsx          # Diálogo de confirmação reutilizável
 │   ├── user-form.tsx               # Formulário criar/editar usuário
 │   ├── category-form.tsx           # Formulário criar/editar categoria
-│   └── attachment-upload.tsx       # Formulário de upload de anexo
+│   ├── attachment-upload.tsx       # Formulário de upload de anexo
+│   └── reimbursement-form.tsx       # Formulário de criação de reembolso (componente extraído para testes)
 ├── context/
 │   └── auth.tsx                    # AuthProvider + AuthContext (Context API)
 ├── hooks/
@@ -71,7 +72,8 @@ src/
 │   ├── use-reimbursement.ts        # Solicitação única + todas as mutations
 │   ├── use-users.ts                # Lista + mutations (create, update, delete)
 │   ├── use-categories.ts           # Lista + mutations (create, update, delete)
-│   └── use-active-categories.ts    # Categorias ativas (para dropdowns)
+│   ├── use-active-categories.ts    # Categorias ativas (para dropdowns)
+│   └── use-pokemon-sprite.ts        # Sprite de Pokémon por perfil (avatar via PokeAPI)
 ├── lib/
 │   ├── api.ts                      # Fetch wrapper (base URL, credentials: include, error handling)
 │   ├── query-client.ts             # Configuração do React Query (staleTime, retry)
@@ -220,10 +222,11 @@ O fluxo de autenticação utiliza **HTTP-only cookies** gerenciados pelo backend
 | `ConfirmDialog`    | Diálogo de confirmação reutilizável (título, descrição, confirmar/cancelar, variante destructive).        |
 | `Breadcrumbs`      | Trilha de navegação dinâmica baseada em `useRouterState().location.pathname`.                             |
 | `NavMain`          | Grupos de menu colapsáveis com ícones do Lucide.                                                          |
-| `NavUser`          | Avatar com iniciais + dropdown (nome, email, perfil, Sign out).                                           |
+| `NavUser`          | Avatar com sprite de Pokémon por perfil (Pikachu=ADMIN, Bulbasaur=COLLABORATOR, Charmander=MANAGER, Squirtle=FINANCE) + dropdown (nome, email, perfil, Sign out). Fallback para iniciais quando offline. |
 | `UserForm`         | Formulário criar/editar usuário (nome, email, senha, perfil). Validação Zod.                              |
 | `CategoryForm`     | Formulário criar/editar categoria (nome, ativo). Validação Zod.                                           |
-| `AttachmentUpload` | Formulário de upload de anexo (nomeArquivo, urlArquivo, tipoArquivo).                                     |
+| `AttachmentUpload`  | Formulário de upload de anexo (nomeArquivo, urlArquivo, tipoArquivo).                                     |
+| `ReimbursementForm` | Formulário de criação de solicitação com dropdown de categorias ativas, validação Zod e bloqueio de datas futuras. |
 
 ## Formulários e Validação (Zod)
 
@@ -367,6 +370,7 @@ import "@testing-library/jest-dom/vitest";
 | `src/__tests__/login-form.test.tsx`         | Comportamento do formulário de login        | Campos vazios mostram erros de validação; botão exibe "Signing in..." durante loading; submit com dados válidos chama `login()` e navega para `/dashboard` |
 | `src/__tests__/reimbursement-form.test.tsx` | Validação do formulário de nova solicitação | Erros de validação com campos vazios; bloqueio de data futura                                                                                              |
 | `src/__tests__/use-auth.test.tsx`           | Hook `useAuth` e `AuthProvider`             | Estado inicial (loading, user null); login bem-sucedido define usuário; login com erro não define usuário; logout limpa estado e chama API                 |
+| `src/__tests__/use-pokemon-sprite.test.tsx` | Hook `usePokemonSprite`                     | ADMIN → Pikachu, COLLABORATOR → Bulbasaur; perfil `undefined` → query desabilitada; loading state; API com erro → retorna `null` |
 
 ### Estratégia de mocks
 
@@ -376,6 +380,7 @@ Cada arquivo de teste utiliza `vi.mock()` para substituir módulos externos e is
 - **`@/hooks/use-auth`** — substituído para controlar estado de autenticação nos testes de formulário
 - **`@/lib/api`** — substituído para simular respostas da API sem requisições reais
 - **`@/hooks/use-active-categories`** — substituído com dados mock de categorias
+- **`globalThis.fetch`** — substituído no teste `use-pokemon-sprite` para simular respostas da PokeAPI
 - **`sonner`** — substituído para evitar renderização de toasts no ambiente de teste
 
 ### Como executar
