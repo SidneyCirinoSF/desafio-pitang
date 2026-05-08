@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +16,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
+import { usePokemonSprite } from "@/hooks/use-pokemon-sprite";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { data: spriteUrl } = usePokemonSprite(user?.perfil);
 
   if (!user) return null;
 
@@ -46,6 +48,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="size-8 rounded-lg">
+                <AvatarImage src={spriteUrl ?? ""} alt={user.perfil} />
                 <AvatarFallback className="rounded-lg text-xs">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -64,6 +67,7 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="size-8 rounded-lg">
+                  <AvatarImage src={spriteUrl ?? ""} alt={user.perfil} />
                   <AvatarFallback className="rounded-lg text-xs">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
