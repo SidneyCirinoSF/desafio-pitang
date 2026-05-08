@@ -81,7 +81,10 @@ export async function listReimbursements(params: ListReimbursementsParams) {
   }
 
   if (params.search) {
-    where.descricao = { contains: params.search };
+    where.OR = [
+      { descricao: { contains: params.search } },
+      { solicitante: { nome: { contains: params.search } } },
+    ];
   }
 
   const sortField =

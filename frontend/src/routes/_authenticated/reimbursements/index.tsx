@@ -93,7 +93,7 @@ function ReimbursementsList() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        searchPlaceholder="Search reimbursements..."
+        searchPlaceholder="Search by description or requester..."
         searchValue={search}
         onSearch={handleSearch}
         filterLabel="Status"
